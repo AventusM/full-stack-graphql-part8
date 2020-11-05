@@ -1,4 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server')
+const { UniqueDirectiveNamesRule } = require('graphql')
+const {v1: uuid} = require('uuid')
 
 let authors = [
   {
@@ -104,9 +106,28 @@ const typeDefs = gql`
       allBooks(author: String, genre: String): [Book!]! 
       allAuthors: [Author!]!
   }
+
+  type Mutation {
+    addBook(title: String!, author: String!, published: Int!, genres: [String!]!): Book
+  }
 `
 
 const resolvers = {
+  Mutation: {
+    addBook: (root, args) => {
+      // NO ERROR HANDLING YET
+      const newBook = {...args, id: uuid()}
+      books = books.concat(newBook)
+
+      // Author doesnt exist? Add to the list of authors
+      if(!authors.find(a => a.name === args.author)){
+        const newAuthor = {name: args.author, id: uuid()}
+        authors = authors.concat(newAuthor)
+      }
+      
+      return newBook
+    }
+  },
   Query: {
       bookCount: () => books.length,
       authorCount: () => authors.length,
