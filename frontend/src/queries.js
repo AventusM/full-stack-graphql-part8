@@ -10,3 +10,14 @@ export const ALL_AUTHORS_QUERY = gql`
     }
   }
 `
+
+export const ALL_BOOKS_QUERY = gql`
+  query {
+    allBooks {
+      title
+      author
+      published
+      genres
+    }
+  }
+`
