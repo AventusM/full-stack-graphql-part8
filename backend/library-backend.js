@@ -1,4 +1,4 @@
-const { ApolloServer, gql } = require("apollo-server")
+const { ApolloServer, gql, UserInputError } = require("apollo-server")
 const { v1: uuid } = require("uuid")
 const mongoose = require("mongoose")
 
@@ -62,6 +62,7 @@ const resolvers = {
   Mutation: {
     addBook: async (root, args) => {
       const { title, author, published, genres } = args
+
       const newBook = new Book({ title, published, genres })
       const authorExists = await Author.findOne({ name: author })
 
@@ -79,7 +80,7 @@ const resolvers = {
         await newBook.save()
         return newBook
       } catch (e) {
-        console.log("addBook error:", e.message)
+        throw new UserInputError(e.message, { invalidArgs: args }) // Catches both author name length & book title length
       }
     },
 
@@ -91,10 +92,9 @@ const resolvers = {
       try {
         await foundAuthor.save()
       } catch (e) {
-        console.log("editAuthor error:", e.message)
+        throw new UserInputError(e.message, { invalidArgs: args }) // Catches birthyear type failures (e.g. string instead of number)
       }
       return foundAuthor
-      // TODO: Save
     },
   },
   Query: {
