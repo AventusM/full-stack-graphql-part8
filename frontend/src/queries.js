@@ -15,7 +15,9 @@ export const ALL_BOOKS_QUERY = gql`
   query {
     allBooks {
       title
-      author
+      author {
+        name
+      }
       published
       genres
     }
