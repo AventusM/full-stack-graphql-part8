@@ -24,7 +24,6 @@ const Books = (props) => {
             <th>published</th>
           </tr>
           {books.map((book) => {
-            console.log("book genres", book.genres)
             const bookInCurrentGenre = book.genres.find(
               (genre) => genre.toLowerCase() === currentGenre || currentGenre === "all"
             )
