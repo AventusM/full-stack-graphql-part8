@@ -8,7 +8,7 @@ import {
 
 const NewBook = (props) => {
   const [title, setTitle] = useState("")
-  const [author, setAuhtor] = useState("")
+  const [author, setAuthor] = useState("")
   const [published, setPublished] = useState("")
   const [genre, setGenre] = useState("")
   const [genres, setGenres] = useState([])
@@ -24,15 +24,17 @@ const NewBook = (props) => {
   const submit = async (event) => {
     event.preventDefault()
 
-    console.log("add book...")
-
-    addBook({
-      variables: { title, author, published: Number(published), genres },
-    })
+    try {
+      addBook({
+        variables: { title, author, published: Number(published), genres },
+      })
+    } catch (e) {
+      console.log(e)
+    }
 
     setTitle("")
     setPublished("")
-    setAuhtor("")
+    setAuthor("")
     setGenres([])
     setGenre("")
   }
@@ -56,7 +58,7 @@ const NewBook = (props) => {
           author
           <input
             value={author}
-            onChange={({ target }) => setAuhtor(target.value)}
+            onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>

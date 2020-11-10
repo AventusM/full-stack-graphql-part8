@@ -2,9 +2,9 @@ import React from "react"
 import EditAuthorForm from "./EditAuthor"
 
 const Authors = (props) => {
-  const { authors } = props
+  const { authors, tokenSet, show } = props
 
-  if (!props.show) {
+  if (!show) {
     return null
   }
 
@@ -31,7 +31,7 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <EditAuthorForm authors={authors} />
+      {tokenSet && <EditAuthorForm authors={authors} />}
     </div>
   )
 }
