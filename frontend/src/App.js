@@ -6,8 +6,14 @@ import {
   ALL_AUTHORS_QUERY,
   ALL_BOOKS_QUERY,
   CURRENT_USER_QUERY,
+  BOOK_ADDED_SUBSCRIPTION,
 } from "./queries"
-import { useQuery, useApolloClient } from "@apollo/client"
+import {
+  useQuery,
+  useApolloClient,
+  useSubscription,
+  useMutation,
+} from "@apollo/client"
 import LoginForm from "./components/Login"
 import Recommendations from "./components/Recommendations"
 
@@ -18,6 +24,12 @@ const App = () => {
   const books = useQuery(ALL_BOOKS_QUERY)
   const currentUser = useQuery(CURRENT_USER_QUERY)
   const client = useApolloClient()
+
+  useSubscription(BOOK_ADDED_SUBSCRIPTION, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      window.alert("New book added!")
+    },
+  })
 
   if (authors.loading || books.loading || currentUser.loading) {
     return <div>Loading front page</div>
