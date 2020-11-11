@@ -3,11 +3,16 @@ import { gql } from "@apollo/client"
 export const BOOK_ADDED_SUBSCRIPTION = gql`
   subscription {
     bookAdded {
+      id
       title
+      genres
+      published
       author {
         name
+        born
+        id
+        bookCount
       }
-      published
     }
   }
 `
@@ -43,12 +48,16 @@ export const ALL_AUTHORS_QUERY = gql`
 export const ALL_BOOKS_QUERY = gql`
   query {
     allBooks {
+      id
       title
-      author {
-        name
-      }
       published
       genres
+      author {
+        name
+        born
+        id
+        bookCount
+      }
     }
   }
 `
@@ -66,12 +75,16 @@ export const ADD_NEW_BOOK_MUTATION = gql`
       published: $published
       genres: $genres
     ) {
+      id
       title
-      author {
-        name
-      }
       published
       genres
+      author {
+        name
+        born
+        id
+        bookCount
+      }
     }
   }
 `

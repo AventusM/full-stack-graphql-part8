@@ -25,9 +25,37 @@ const App = () => {
   const currentUser = useQuery(CURRENT_USER_QUERY)
   const client = useApolloClient()
 
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) => set.map((p) => p.id).includes(object.id)
+
+    const booksInStore = client.readQuery({ query: ALL_BOOKS_QUERY })
+    if (!includedIn(booksInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS_QUERY,
+        data: { allBooks: booksInStore.allBooks.concat(addedBook) },
+      })
+    }
+
+    const authorsInStore = client.readQuery({ query: ALL_AUTHORS_QUERY })
+    if (!includedIn(authorsInStore.allAuthors, addedBook.author)) {
+      client.writeQuery({
+        query: ALL_AUTHORS_QUERY,
+        data: {
+          allAuthors: authorsInStore.allAuthors.concat(addedBook.author),
+        },
+      })
+    }
+  }
+
   useSubscription(BOOK_ADDED_SUBSCRIPTION, {
     onSubscriptionData: ({ subscriptionData }) => {
-      window.alert("New book added!")
+      const addedBook = subscriptionData.data.bookAdded
+      window.alert(`${addedBook.title} by ${addedBook.author.name} added`)
+      try {
+        updateCacheWith(addedBook)
+      } catch (e) {
+        console.log("error", e)
+      }
     },
   })
 
@@ -83,7 +111,7 @@ const App = () => {
         books={books.data.allBooks}
         currentUser={currentUser.data.me}
       />
-      <NewBook show={page === "add"} />
+      <NewBook show={page === "add"} updateCacheWith={updateCacheWith} />
     </Fragment>
   )
 }

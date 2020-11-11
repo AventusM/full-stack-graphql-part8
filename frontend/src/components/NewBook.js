@@ -6,7 +6,7 @@ import {
   ALL_AUTHORS_QUERY,
 } from "../queries"
 
-const NewBook = (props) => {
+const NewBook = ({ show, updateCacheWith }) => {
   const [title, setTitle] = useState("")
   const [author, setAuthor] = useState("")
   const [published, setPublished] = useState("")
@@ -14,10 +14,17 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [addBook] = useMutation(ADD_NEW_BOOK_MUTATION, {
-    refetchQueries: [{ query: ALL_BOOKS_QUERY }, { query: ALL_AUTHORS_QUERY }],
+    //refetchQueries: [{ query: ALL_BOOKS_QUERY }, { query: ALL_AUTHORS_QUERY }],
+    update: (store, response) => {
+      try {
+        updateCacheWith(response.data.addBook)
+      } catch (e) {
+        console.log("update error (addBook)")
+      }
+    },
   })
 
-  if (!props.show) {
+  if (!show) {
     return null
   }
 
