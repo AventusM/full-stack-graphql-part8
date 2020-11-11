@@ -9,7 +9,7 @@ import {
 } from "./queries"
 import { useQuery, useApolloClient } from "@apollo/client"
 import LoginForm from "./components/Login"
-import Recommendations from './components/Recommendations'
+import Recommendations from "./components/Recommendations"
 
 const App = () => {
   const [token, setToken] = useState(null)
@@ -19,15 +19,15 @@ const App = () => {
   const currentUser = useQuery(CURRENT_USER_QUERY)
   const client = useApolloClient()
 
-  if (authors.loading || books.loading) {
+  if (authors.loading || books.loading || currentUser.loading) {
     return <div>Loading front page</div>
   }
 
-  const logout = async () => {
+  const logout = () => {
     setPage("login")
     setToken(null)
-    localStorage.clear()
-    await client.resetStore()
+    //localStorage.clear() --> Logging in after logout without refreshing browser will result in currentUser being null
+    client.resetStore()
   }
 
   if (!token) {

@@ -3,8 +3,10 @@ const {
   gql,
   UserInputError,
   AuthenticationError,
+  PubSub,
 } = require("apollo-server")
-const { v1: uuid } = require("uuid")
+
+const pubsub = new PubSub()
 const mongoose = require("mongoose")
 
 const Author = require("./models/author")
@@ -13,6 +15,7 @@ const User = require("./models/user")
 
 const jwt = require("jsonwebtoken")
 const JWT_SECRET = "WOW_VWERY_FANTASTIC_BODY"
+const SUBSCRIPTION_BOOK_ADDED = "BOOK_ADDED"
 
 const MONGODB_URI =
   "mongodb+srv://AntonAdmin:hjVqQjM1s5487aMs@graphql.ws6dg.mongodb.net/graphql?retryWrites=true&w=majority"
@@ -34,6 +37,10 @@ mongoose
   })
 
 const typeDefs = gql`
+  type Subscription {
+    bookAdded: Book!
+  }
+
   type User {
     username: String!
     favoriteGenre: String!
@@ -111,6 +118,7 @@ const resolvers = {
         throw new UserInputError(e.message, { invalidArgs: args }) // Catches both author name length & book title length
       }
 
+      pubsub.publish(SUBSCRIPTION_BOOK_ADDED, { bookAdded: newBook })
       return newBook
     },
 
@@ -180,6 +188,11 @@ const resolvers = {
       return filteredBooks.length
     },
   },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator([SUBSCRIPTION_BOOK_ADDED]),
+    },
+  },
 }
 
 const server = new ApolloServer({
@@ -195,6 +208,7 @@ const server = new ApolloServer({
   },
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })
